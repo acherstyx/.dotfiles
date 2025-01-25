@@ -12,7 +12,7 @@ spin() {
     after_msg="$2"
   local spinner
   local -a spinners
-  spinners=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+  spinners=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
 
   # hide cursor
   tput civis
@@ -54,7 +54,8 @@ execute() {
       errors+=("$2")
       shift
       ;;
-    -* | --*)
+    -*)
+      echo "Invalid option: $1" >&2
       return 1
       ;;
     *)
@@ -66,7 +67,7 @@ execute() {
 
   {
     for arg in "${args[@]}"; do
-      ${~${=arg}} &>$ERROR_FILE
+      eval "$arg" &>$ERROR_FILE
       # When an error causes
       if [[ $status -ne 0 ]]; then
         # error mssages
@@ -91,7 +92,7 @@ execute() {
 
   if [[ $status -ne 0 ]]; then
     printf "\033[2K" 2>/dev/null
-    printf "\n $fg[yellow]\U26A0$reset_color  Error occurred, check the log for more information.\n" 2>/dev/null
+    printf "\n $fg[yellow]\U26A0$reset_color  Error occurred, check the log below for more information.\n" 2>/dev/null
     cat $ERROR_FILE
     exit 1
   fi
